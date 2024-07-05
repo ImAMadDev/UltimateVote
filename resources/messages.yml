@@ -1,0 +1,13 @@
+prefix: "&l&3Ultimate Vote&r "
+checking: "&aWe're checking for your vote."
+only-player: '&cThis command can only be ran by players.'
+already-checking: "&cPlease wait, we're already checking for your vote."
+available-rewards: '&6You have rewards for claiming, use /{command}.'
+already-claimed: '&cYou have already claimed your vote rewards.'
+claim-broadcast: '&e{username} &ahas voted and received great rewards, vote too at &6{link}.'
+remaining-votes: '&e{amount}&a votes remaining till &6s&9u&ar&bp&cr&di&es&3e&9s&c!.'
+not-found: "&cYou haven't voted yet, be sure to vote at &6{link}"
+error: "&cAn error occurred while trying to claim your vote, please contact an admin."
+vote-party: '&6Voting goal reached.'
+top-title: '&3Top votes'
+top-line: '&a{index} {username} {votes}'

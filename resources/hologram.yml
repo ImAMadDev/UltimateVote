@@ -1,0 +1,6 @@
+enabled: true
+location:
+  x: 0
+  y: 100
+  z: 0
+  world: world

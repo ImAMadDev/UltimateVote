@@ -1,0 +1,43 @@
+api-key: ""
+claim-on-join: false
+broadcast-on-claim: true
+top-update: 300
+link: vote.server.com
+rewards:
+  commands:
+    - say {username} Thanks for your vote
+    - give {username} diamond 64
+  items:
+    - grass:
+        customName: ""
+        lore: [ ]
+        amount: 64
+        enchantments:
+          - sharpness:1
+    - grass:
+        customName: ""
+        lore: [ ]
+        amount: 13
+        enchantments:
+          - sharpness:3
+vote-party:
+  enabled: true
+  amount: 50
+  commands:
+    - say {username} Thanks for your vote
+    - give {username} diamond 64
+  items:
+    - grass:
+        customName: ""
+        lore: [ ]
+        amount: 64
+        enchantments:
+          - sharpness:1
+command-vote:
+  name: vote
+  description: "Vote for us"
+  permission: null
+  usage: /vote
+  aliases:
+    - ultimatevote
+    - uv
