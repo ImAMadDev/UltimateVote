@@ -61,7 +61,7 @@ final class Loader extends PluginBase{
 		$this->saveResource(self::CONFIG_MESSAGES, true);
 	}
 
-	private function registerThread(): void {
+	private function registerThread(): void{
 		$notifier = $this->getServer()->getTickSleeper()->addNotifier(function (): void {
 			$this->voteThread->collect();
 		});
@@ -70,7 +70,7 @@ final class Loader extends PluginBase{
 		$this->voteThread->setKey($this->getConfig()->get(self::CONFIG_KEY));
 	}
 
-	protected function onEnable(): void {
+	protected function onEnable(): void{
 		$this->voteThread->execute(new ProcessVote(Utils::TOP_URL, ''));
 		$this->registerListeners();
 		$this->registerCommands();
@@ -83,11 +83,11 @@ final class Loader extends PluginBase{
 		$this->getScheduler()->scheduleRepeatingTask(new TopUpdateTask(), (int) $this->getConfig()->get(self::CONFIG_TOP_UPDATE, 300) * 20);
 	}
 
-	private function registerListeners(): void {
+	private function registerListeners(): void{
 		$this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
 	}
 
-	private function registerCommands(): void {
+	private function registerCommands(): void{
 		$cmdConfig = $this->getConfig()->get(self::CONFIG_CMD_VOTE);
 		$command = new VoteCommand(
 			$cmdConfig['name'],
@@ -96,7 +96,7 @@ final class Loader extends PluginBase{
 			$cmdConfig['aliases']
 		);
 
-		if (is_string($cmdConfig['permission'])) {
+		if (is_string($cmdConfig['permission'])){
 			Utils::registerPermission($cmdConfig['permission']);
 			$command->setPermission($cmdConfig['permission']);
 		} else {
