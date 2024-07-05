@@ -2,5 +2,5 @@ composer.json
 composer.lock
 vendor
 .idea
-TNTTag.phar
+build.php
 updateAndStart.sh
