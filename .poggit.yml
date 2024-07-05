@@ -5,4 +5,5 @@ branches:
 projects:
   UltimateVote:
     path: ""
+    icon: "assets/icon.png"
 ...
