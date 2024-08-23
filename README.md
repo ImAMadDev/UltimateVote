@@ -8,7 +8,7 @@ UltimateVote is a PocketMine-MP plugin for letting players claim their rewards f
 
 ## Overview
 
-- All voting requests use a separate thread instead of asynchronous tasks, which improves performance.
+- All voting requests uses AsyncTask instead of asynchronous tasks, which improves performance.
 - All messages are editable in the configuration
 - Automatic vote claiming, when a player joins.
 - PlayerVoteEvent for plugin developers.
@@ -16,4 +16,15 @@ UltimateVote is a PocketMine-MP plugin for letting players claim their rewards f
 
 > Note: Data is cached and updated every 5 minutes.
 
-# The plugin is still under development
+> <a href="https://github.com/ImAMadDev/UltimateVote/issues"> For new feature requests or bug reports (click here)</a>
+
+
+## Last Update
+- Now requests are with `AsyncTask` instead of `Threads`
+- A license has been added
+- Update Readme
+
+## Upcoming functions to be implemented
+- Save votes
+
+<span style="color:yellow">The plugin is still under development</span>

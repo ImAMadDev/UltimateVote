@@ -1,7 +1,7 @@
 <?php
 $dir = explode('/', __DIR__);
 $plugin_name = end($dir);
-$file_phar = '/home/appgallery/Bit/plugins/' . $plugin_name . '.phar';
+$file_phar = '/home/appgallery/pmmp/plugins/' . $plugin_name . '.phar';
 
 if (file_exists($file_phar)) {
     echo "Phar file already exists!";

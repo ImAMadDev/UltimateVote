@@ -2,18 +2,12 @@
 
 declare(strict_types=1);
 
-namespace AppGallery\ultimatevote\thread\task;
+namespace AppGallery\ultimatevote\task\async;
 
-final class ProcessVote implements VoteTask{
-
-	private string $username;
-	private string $url;
-	private mixed $result;
+final class ProcessVote extends VoteTask{
 
 	public function __construct(string $url, string $username = '', private readonly bool $claim = false){
-		$this->username = $username;
-		$username = str_replace(' ', '%20', $username);
-		$this->url = str_replace('{username}', $username, $url);
+		parent::__construct($username, $url);
 	}
 
 	public function getUsername(): string{
@@ -24,8 +18,8 @@ final class ProcessVote implements VoteTask{
 		return $this->claim;
 	}
 
-	public function execute(string $key): bool|string{
-		$req = curl_init(str_replace('{key}', $key, $this->url));
+	public function execute(): bool|string{
+		$req = curl_init($this->url);
 
 		curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($req, CURLOPT_FORBID_REUSE, true);
@@ -37,14 +31,6 @@ final class ProcessVote implements VoteTask{
 		curl_close($req);
 
 		return $response;
-	}
-
-	public function getResult(): mixed{
-		return $this->result;
-	}
-
-	public function setResult(mixed $result): void{
-		$this->result = $result;
 	}
 
 }

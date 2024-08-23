@@ -7,10 +7,11 @@ namespace AppGallery\ultimatevote\session;
 use AppGallery\ultimatevote\event\PlayerVoteEvent;
 use AppGallery\ultimatevote\Loader;
 use AppGallery\ultimatevote\message\Translator;
-use AppGallery\ultimatevote\thread\task\ProcessVote;
+use AppGallery\ultimatevote\task\async\ProcessVote;
 use AppGallery\ultimatevote\utils\Utils;
 use AppGallery\ultimatevote\utils\VoteRewards;
 use pocketmine\player\Player;
+use pocketmine\Server;
 
 final class Session{
 
@@ -22,7 +23,7 @@ final class Session{
 
 	public function process(bool $claim = true): void{
 		$this->processing = true;
-		Loader::getInstance()->getVoteThread()->execute(new ProcessVote(Utils::FETCH_URL, $this->getPlayer()->getName(), $claim));
+		Server::getInstance()->getAsyncPool()->submitTask(new ProcessVote(Utils::FETCH_URL, $this->getPlayer()->getName(), $claim));
 		$this->player->sendMessage(Translator::getInstance()->translate('prefix') . Translator::getInstance()->translate('checking'));
 	}
 

@@ -8,19 +8,15 @@ use AppGallery\ultimatevote\command\VoteCommand;
 use AppGallery\ultimatevote\hologram\Hologram;
 use AppGallery\ultimatevote\message\Translator;
 use AppGallery\ultimatevote\session\SessionFactory;
+use AppGallery\ultimatevote\task\async\VoteTask;
 use AppGallery\ultimatevote\task\TopUpdateTask;
-use AppGallery\ultimatevote\thread\task\ProcessVote;
-use AppGallery\ultimatevote\thread\VoteThread;
-use AppGallery\ultimatevote\utils\Utils;
 use AppGallery\ultimatevote\utils\VoteRewards;
 use AppGallery\ultimatevote\voteparty\VoteParty;
 use JackMD\UpdateNotifier\UpdateNotifier;
-use pmmp\thread\Thread;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use pocketmine\utils\Config;
@@ -37,41 +33,26 @@ final class Loader extends PluginBase{
 	private const CONFIG_TOP_UPDATE = 'top-update';
 	public const CONFIG_CMD_VOTE = 'command-vote';
 
-	private VoteThread $voteThread;
 	private ?Hologram $hologram = null;
 
 	public function getHologram(): ?Hologram{
 		return $this->hologram;
 	}
 
-	public function getVoteThread(): VoteThread{
-		return $this->voteThread;
-	}
-
 	protected function onLoad(): void{
 		self::$instance = $this;
 		$this->saveDefaultConfigs();
-		$this->registerThread();
+		VoteTask::setVoteKey($this->getConfig()->get(self::CONFIG_KEY));
 		UpdateNotifier::checkUpdate($this, $this->getName(), $this->getDescription()->getVersion());
 	}
 
 	private function saveDefaultConfigs(): void {
-		$this->saveResource(self::CONFIG_MAIN, true);
-		$this->saveResource(self::CONFIG_HOLOGRAM, true);
-		$this->saveResource(self::CONFIG_MESSAGES, true);
-	}
-
-	private function registerThread(): void{
-		$notifier = $this->getServer()->getTickSleeper()->addNotifier(function (): void {
-			$this->voteThread->collect();
-		});
-		$this->voteThread = new VoteThread($notifier);
-		$this->voteThread->start(Thread::INHERIT_INI | Thread::INHERIT_CONSTANTS);
-		$this->voteThread->setKey($this->getConfig()->get(self::CONFIG_KEY));
+		$this->saveResource(self::CONFIG_MAIN);
+		$this->saveResource(self::CONFIG_HOLOGRAM);
+		$this->saveResource(self::CONFIG_MESSAGES);
 	}
 
 	protected function onEnable(): void{
-		$this->voteThread->execute(new ProcessVote(Utils::TOP_URL, ''));
 		$this->registerListeners();
 		$this->registerCommands();
 		$this->registerEntity();
@@ -88,22 +69,7 @@ final class Loader extends PluginBase{
 	}
 
 	private function registerCommands(): void{
-		$cmdConfig = $this->getConfig()->get(self::CONFIG_CMD_VOTE);
-		$command = new VoteCommand(
-			$cmdConfig['name'],
-			$cmdConfig['description'],
-			$cmdConfig['usage'],
-			$cmdConfig['aliases']
-		);
-
-		if (is_string($cmdConfig['permission'])){
-			Utils::registerPermission($cmdConfig['permission']);
-			$command->setPermission($cmdConfig['permission']);
-		} else {
-			$command->setPermission(DefaultPermissionNames::GROUP_USER);
-		}
-
-		$this->getServer()->getCommandMap()->register($this->getName(), $command);
+		$this->getServer()->getCommandMap()->register($this->getName(), new VoteCommand($this));
 	}
 
 	private function registerEntity(): void{
@@ -136,7 +102,5 @@ final class Loader extends PluginBase{
 
 	protected function onDisable(): void{
 		VoteParty::getInstance()->save();
-		$this->voteThread->stop();
-		$this->voteThread->join();
 	}
 }

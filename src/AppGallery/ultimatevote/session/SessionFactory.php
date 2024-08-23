@@ -16,8 +16,8 @@ final class SessionFactory{
 
 	public function onEnable(Loader $plugin): void{}
 
-	public function add(Player $player): void{
-		$this->sessions[$player->getName()] = new Session($player);
+	public function add(Player $player): Session{
+		return $this->sessions[$player->getName()] = new Session($player);
 	}
 
 	public function get(Player $player): ?Session{
