@@ -7,9 +7,10 @@ use AppGallery\ultimatevote\utils\Utils;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 
-class TopUpdateTask extends Task{
+final class TopUpdateTask extends Task{
 
 	public function onRun(): void{
 		Server::getInstance()->getAsyncPool()->submitTask(new ProcessVote(Utils::TOP_URL));
 	}
+
 }

@@ -2,4 +2,4 @@ name: UltimateVote
 version: 1.4
 api: 5.0.0
 author: AppGallery
-main: AppGallery\ultimatevote\Loader
+main: AppGallery\ultimatevote\VotePlugin

@@ -7,8 +7,8 @@ namespace AppGallery\ultimatevote\event;
 use pocketmine\event\player\PlayerEvent;
 use pocketmine\player\Player;
 
-class PlayerVoteEvent extends PlayerEvent{
+class PlayerVoteEvent extends PlayerEvent {
 
-	public function __construct(protected Player $player){}
+	public function __construct(protected Player $player) {}
 
 }

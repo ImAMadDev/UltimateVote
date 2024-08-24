@@ -12,37 +12,39 @@ use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
 
-class CustomCommandSender implements CommandSender{
+final class CustomCommandSender implements CommandSender {
 	use PermissibleDelegateTrait;
 
-	public function __construct(){
+	public function __construct() {
 		$this->perm = new PermissibleBase([DefaultPermissions::ROOT_CONSOLE => true]);
-		$this->recalculatePermissions();
+
+        $this->recalculatePermissions();
 	}
 
-	public function sendMessage(Translatable|string $message): void{
-		if($message instanceof Translatable){
+	public function sendMessage(Translatable|string $message): void {
+		if($message instanceof Translatable) {
 			$message = $this->getLanguage()->translate($message);
 		}
 
 		$this->getServer()->getLogger()->info($message);
 	}
 
-	public function getLanguage(): Language{
+	public function getLanguage(): Language {
 		return $this->getServer()->getLanguage();
 	}
 
-	public function getServer(): Server{
+	public function getServer(): Server {
 		return Server::getInstance();
 	}
 
-	public function getName(): string{
+	public function getName(): string {
 		return "CONSOLE";
 	}
 
-	public function getScreenLineHeight(): int{
+	public function getScreenLineHeight(): int {
 		return PHP_INT_MAX;
 	}
 
-	public function setScreenLineHeight(?int $height): void{}
+	public function setScreenLineHeight(?int $height): void {}
+
 }

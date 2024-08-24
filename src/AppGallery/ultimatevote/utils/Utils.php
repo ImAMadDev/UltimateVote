@@ -10,14 +10,12 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
-use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionManager;
-use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 
-final class Utils{
+final class Utils {
 
 	const TOP_URL = "https://minecraftpocket-servers.com/api/?object=servers&element=voters&key={key}&format=json";
 	const FETCH_URL = "https://minecraftpocket-servers.com/api/?object=votes&element=claim&key={key}&username={username}";
@@ -29,69 +27,78 @@ final class Utils{
 	const STATUS_ALREADY_CLAIMED = '2';
 	const STATUS_JUST_CLAIMED = '3';
 
-	private function __construct(){}
+	private function __construct() {}
 
-	public static function registerPermission(string $permission, string $description = '', bool $default = false): Permission{
-		$permManager = PermissionManager::getInstance();
+	public static function registerPermission(string $permissionName, string $description = '', bool $default = false): Permission {
+		$permissionManager = PermissionManager::getInstance();
 
-		$opRoot = $permManager->getPermission(DefaultPermissions::ROOT_OPERATOR);
-		$everyoneRoot = $permManager->getPermission(DefaultPermissions::ROOT_USER);
+		$opRoot = $permissionManager->getPermission(DefaultPermissions::ROOT_OPERATOR);
+		$everyoneRoot = $permissionManager->getPermission(DefaultPermissions::ROOT_USER);
 
-		$perm = new Permission($permission, $description);
+		$permission = new Permission($permissionName, $description);
 
-		$opRoot->addChild($perm->getName(), true);
-		$everyoneRoot->addChild($perm->getName(), $default);
+		$opRoot->addChild($permission->getName(), true);
+		$everyoneRoot->addChild($permission->getName(), $default);
 
-		$permManager->addPermission($perm);
+		$permissionManager->addPermission($permission);
 
-		return $permManager->getPermission($permission);
+		return $permissionManager->getPermission($permissionName);
 	}
 
-	public static function parseRewards(array $items): array{
+	public static function parseRewards(array $items): array {
 		$rewards = [];
-		foreach($items as $type => $reward){
+
+		foreach ($items as $type => $reward) {
             if ($type === 'commands') {
-				foreach($reward as $command){
-					$rewards[$type][] = $command;
-				}
-			} elseif($type === 'items'){
-				foreach($reward as $item){
-					$rewards[$type][] = self::parseItem($item);
-				}
+                $rewards[$type] = $reward;
+                continue;
 			}
-		}
+
+            if ($type !== 'items') continue;
+
+            $rewards[$type] = array_map(fn($item) => self::parseItem($item), $reward);
+        }
+
 		return $rewards;
 	}
 
-	private static function parseItem(array $item): Item{
+    private static function parseItem(array $item): Item {
         $itemKey = key($item);
         $values = $item[$itemKey];
-        $parsedItem = StringToItemParser::getInstance()->parse($itemKey) ?? throw new InvalidArgumentException('Item ' . $itemKey . ' not found');
 
-        $parsedItem->setCustomName($values['customName'] ?? '');
-        $parsedItem->setLore(array_map([TextFormat::class, 'colorize'], $values['lore'] ?? []));
-        $parsedItem->setCount($values['amount'] ?? 1);
-		foreach($values['enchantments'] ?? [] as $enchantment){
-			[$name, $level] = explode(':', $enchantment);
-            $parsedEnchantment = StringToEnchantmentParser::getInstance()->parse($name);
-            if ($parsedEnchantment instanceof Enchantment) {
-                $parsedItem->addEnchantment(new EnchantmentInstance($parsedEnchantment, intval($level)));
-			}
-		}
+        $parsedItem = StringToItemParser::getInstance()->parse($itemKey);
+
+        if ($parsedItem === null) {
+            throw new InvalidArgumentException('Item ' . $itemKey . ' not found');
+        }
+
+        if (isset($values['customName']) && $values['customName'] !== '') {
+            $parsedItem->setCustomName($values['customName']);
+        }
+
+        if (!empty($values['lore'])) {
+            $parsedItem->setLore(array_map([TextFormat::class, 'colorize'], $values['lore']));
+        }
+
+        $parsedItem->setCount(isset($values['amount']) ? (int)$values['amount'] : 1);
+
+        if (!empty($values['enchantments'])) {
+            self::addEnchantments($parsedItem, $values['enchantments']);
+        }
+
         return $parsedItem;
-	}
+    }
 
-	public static function playSound(Player $player, string $sound, float $pitch = 1.0, float $volume = 1.0): void{
-		$packet = new PlaySoundPacket();
-        $position = $player->getPosition();
-        $packet->x = $position->getFloorX();
-        $packet->y = $position->getFloorY();
-        $packet->z = $position->getFloorZ();
-		$packet->soundName = $sound;
-		$packet->pitch = $pitch;
-		$packet->volume = $volume;
-		$player->getNetworkSession()->sendDataPacket($packet);
+    private static function addEnchantments(Item $item, array $enchantments): void {
+        foreach ($enchantments as $enchantment) {
+            [$name, $level] = explode(':', $enchantment);
 
-	}
+            $parsedEnchantment = StringToEnchantmentParser::getInstance()->parse($name);
+
+            if (!$parsedEnchantment instanceof Enchantment) continue;
+
+            $item->addEnchantment(new EnchantmentInstance($parsedEnchantment, (int)$level));
+        }
+    }
 
 }
