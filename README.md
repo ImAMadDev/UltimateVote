@@ -26,5 +26,6 @@ UltimateVote is a PocketMine-MP plugin for letting players claim their rewards f
 
 ## Upcoming functions to be implemented
 - Save votes
+- Different benefits depending on the player's permissions
 
 <span style="color:yellow">The plugin is still under development</span>
