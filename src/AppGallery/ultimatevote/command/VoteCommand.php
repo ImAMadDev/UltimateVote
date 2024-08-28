@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace AppGallery\ultimatevote\command;
 
-use AppGallery\ultimatevote\Loader;
-use AppGallery\ultimatevote\message\Translator;
-use AppGallery\ultimatevote\session\SessionFactory;
+use AppGallery\ultimatevote\UltimateVote;
 use AppGallery\ultimatevote\utils\Utils;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -18,9 +16,9 @@ use pocketmine\plugin\PluginOwnedTrait;
 final class VoteCommand extends Command implements PluginOwned{
 	use PluginOwnedTrait;
 
-	public function __construct(Loader $plugin){
+	public function __construct(UltimateVote $plugin){
 		$this->owningPlugin = $plugin;
-		$cmdConfig = $plugin->getConfig()->get(Loader::CONFIG_CMD_VOTE);
+		$cmdConfig = $plugin->getConfig()->get(UltimateVote::CONFIG_CMD_VOTE);
 		parent::__construct(
 			$cmdConfig['name'],
 			$cmdConfig['description'],
@@ -36,14 +34,19 @@ final class VoteCommand extends Command implements PluginOwned{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args): void{
+		$translator = UltimateVote::getInstance()->getTranslator();
 		if(!($sender instanceof Player)){
-			$sender->sendMessage(Translator::getInstance()->translate('prefix') . Translator::getInstance()->translate('only-player'));
+			$sender->sendMessage($translator->translate('prefix') . $translator->translate('only-player'));
 			return;
 		}
 
-		$session = SessionFactory::getInstance()->get($sender);
+		$session = UltimateVote::getInstance()->getSessionFactory()->get($sender);
+		if($session === null){
+			UltimateVote::getInstance()->getSessionFactory()->add($sender);
+		}
+
 		if($session->isProcessing()){
-			$sender->sendMessage(Translator::getInstance()->translate('prefix') . Translator::getInstance()->translate('already-checking'));
+			$sender->sendMessage($translator->translate('prefix') . $translator->translate('already-checking'));
 			return;
 		}
 

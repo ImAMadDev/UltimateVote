@@ -5,8 +5,8 @@ top-update: 300
 link: vote.server.com
 rewards:
   commands:
-    - say {username} Thanks for your vote
-    - give {username} diamond 64
+    - "{console}say {username} Thanks for your vote"
+    - "{console}give {username} diamond 64"
   items:
     - grass:
         customName: ""

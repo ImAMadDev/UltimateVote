@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AppGallery\ultimatevote\utils;
 
-use AppGallery\ultimatevote\Loader;
+use AppGallery\ultimatevote\UltimateVote;
 
 final class VoteCache{
 
@@ -19,7 +19,7 @@ final class VoteCache{
 
 	public static function setTopCache(array $topCache): void{
 		self::$topCache = $topCache;
-		Loader::getInstance()->getHologram()?->parse($topCache);
+		UltimateVote::getInstance()->getHologram()?->parse($topCache);
 	}
 
 	public static function getInformation(): string{

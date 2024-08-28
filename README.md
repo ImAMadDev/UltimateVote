@@ -4,11 +4,11 @@
 
 UltimateVote is a PocketMine-MP plugin for letting players claim their rewards from voting for your server.
 
-[![](https://poggit.pmmp.io/shield.state/UltimateVote)](https://poggit.pmmp.io/p/UltimateVote) [![](https://poggit.pmmp.io/shield.dl.total/UltimateVote)](https://poggit.pmmp.io/p/UltimateVote)
+![](https://poggit.pmmp.io/shield.state/UltimateVote)
 
 ## Overview
 
-- All voting requests uses AsyncTask instead of asynchronous tasks, which improves performance.
+- All voting requests uses AsyncTask, which improves performance.
 - All messages are editable in the configuration
 - Automatic vote claiming, when a player joins.
 - PlayerVoteEvent for plugin developers.
@@ -20,12 +20,13 @@ UltimateVote is a PocketMine-MP plugin for letting players claim their rewards f
 
 
 ## Last Update
-- Now requests are with `AsyncTask` instead of `Threads`
-- A license has been added
-- Update Readme
+- Most code clean-up
+- When a command is to be executed by the console it must have the prefix `{console}`
 
 ## Upcoming functions to be implemented
 - Save votes
 - Different benefits depending on the player's permissions
 
 <span style="color:yellow">The plugin is still under development</span>
+
+Thanks for your suggestions <a href="https://github.com/cendaaal">cendaaal</a>  

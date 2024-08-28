@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AppGallery\ultimatevote\hologram;
 
-use AppGallery\ultimatevote\message\Translator;
+use AppGallery\ultimatevote\UltimateVote;
+use JsonException;
 use pocketmine\entity\Human;
 use pocketmine\entity\Location;
 use pocketmine\entity\Skin;
@@ -12,6 +15,9 @@ use pocketmine\utils\TextFormat;
 
 final class Hologram extends Human{
 
+	/**
+	 * @throws JsonException
+	 */
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
 		parent::__construct($location, new Skin("Standard_Custom", str_repeat("\x00", 8192)), $nbt);
 		$this->setNameTagAlwaysVisible();
@@ -22,12 +28,12 @@ final class Hologram extends Human{
 	}
 
 	public function parse(array $top): void{
-		$nametag = Translator::getInstance()->translate('top-title') . TextFormat::EOL;
+		$nameTag = UltimateVote::getInstance()->getTranslator()->translate('top-title') . TextFormat::EOL;
 		foreach($top as $index => $data){
-			$nametag .= Translator::getInstance()->translate('top-line', ['index' => $index + 1, 'username' => $data['nickname'], 'votes' => $data['votes']]) . TextFormat::EOL;
+			$nameTag .= UltimateVote::getInstance()->getTranslator()->translate('top-line', ['index' => $index + 1, 'username' => $data['nickname'], 'votes' => $data['votes']]) . TextFormat::EOL;
 		}
 
-		$this->setNameTag($nametag);
+		$this->setNameTag($nameTag);
 	}
 
 	public function move(float $dx, float $dy, float $dz): void{}

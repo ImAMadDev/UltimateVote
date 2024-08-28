@@ -10,9 +10,10 @@ use AppGallery\ultimatevote\message\Translator;
 use AppGallery\ultimatevote\session\SessionFactory;
 use AppGallery\ultimatevote\task\async\VoteTask;
 use AppGallery\ultimatevote\task\TopUpdateTask;
-use AppGallery\ultimatevote\utils\VoteRewards;
+use AppGallery\ultimatevote\utils\Rewards;
 use AppGallery\ultimatevote\voteparty\VoteParty;
 use JackMD\UpdateNotifier\UpdateNotifier;
+use JsonException;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
@@ -23,7 +24,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
 
-final class Loader extends PluginBase{
+final class UltimateVote extends PluginBase{
 	use SingletonTrait;
 
 	private const CONFIG_HOLOGRAM = 'hologram.yml';
@@ -34,10 +35,10 @@ final class Loader extends PluginBase{
 	public const CONFIG_CMD_VOTE = 'command-vote';
 
 	private ?Hologram $hologram = null;
-
-	public function getHologram(): ?Hologram{
-		return $this->hologram;
-	}
+	private SessionFactory $sessionFactory;
+	private VoteParty $voteParty;
+	private Translator $translator;
+	private Rewards $voteRewards;
 
 	protected function onLoad(): void{
 		self::$instance = $this;
@@ -56,16 +57,21 @@ final class Loader extends PluginBase{
 		$this->registerListeners();
 		$this->registerCommands();
 		$this->registerEntity();
-		$this->loadHologram();
-		VoteParty::getInstance()->onEnable($this);
-		SessionFactory::getInstance()->onEnable($this);
-		Translator::getInstance()->onEnable($this);
-		VoteRewards::getInstance()->load($this);
+		try{
+			$this->loadHologram();
+		} catch(JsonException $exception){
+			$this->getLogger()->error($exception->getMessage());
+		}
+
+		$this->voteParty = new VoteParty($this);
+		$this->sessionFactory = new SessionFactory();
+		$this->translator = new Translator($this);
+		$this->voteRewards = new Rewards($this->getConfig()->get('rewards'));
 		$this->getScheduler()->scheduleRepeatingTask(new TopUpdateTask(), (int) $this->getConfig()->get(self::CONFIG_TOP_UPDATE, 300) * 20);
 	}
 
 	private function registerListeners(): void{
-		$this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
+		$this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
 	}
 
 	private function registerCommands(): void{
@@ -78,6 +84,9 @@ final class Loader extends PluginBase{
 		}, ['hologram']);
 	}
 
+	/**
+	 * @throws JsonException
+	 */
 	private function loadHologram(): void{
 		$config = new Config($this->getDataFolder() . self::CONFIG_HOLOGRAM);
 		if ($config->get('enabled') === true) {
@@ -100,7 +109,27 @@ final class Loader extends PluginBase{
 		}
 	}
 
+	public function getHologram(): ?Hologram{
+		return $this->hologram;
+	}
+
+	public function getVoteParty(): VoteParty{
+		return $this->voteParty;
+	}
+
+	public function getSessionFactory(): SessionFactory{
+		return $this->sessionFactory;
+	}
+
+	public function getTranslator(): Translator{
+		return $this->translator;
+	}
+
+	public function getVoteRewards(): Rewards{
+		return $this->voteRewards;
+	}
+
 	protected function onDisable(): void{
-		VoteParty::getInstance()->save();
+		$this->voteParty->save();
 	}
 }

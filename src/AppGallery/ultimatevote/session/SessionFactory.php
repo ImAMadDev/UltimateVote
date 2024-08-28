@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 namespace AppGallery\ultimatevote\session;
 
-use AppGallery\ultimatevote\Loader;
 use pocketmine\player\Player;
-use pocketmine\utils\SingletonTrait;
 
 final class SessionFactory{
-	use SingletonTrait;
-
 	/** @var Session[] * */
 	private array $sessions = [];
-
-	public function onEnable(Loader $plugin): void{}
 
 	public function add(Player $player): Session{
 		return $this->sessions[$player->getName()] = new Session($player);

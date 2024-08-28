@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace AppGallery\ultimatevote;
 
 use AppGallery\ultimatevote\event\PlayerVoteEvent;
-use AppGallery\ultimatevote\message\Translator;
-use AppGallery\ultimatevote\session\SessionFactory;
-use AppGallery\ultimatevote\voteparty\VoteParty;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -15,27 +12,34 @@ use pocketmine\Server;
 
 final class EventListener implements Listener{
 
+	public function __construct(
+		private readonly UltimateVote $plugin
+	){}
+
 	/**
 	 * @priority MONITOR
 	 **/
 	public function handleJoin(PlayerJoinEvent $event): void{
-		SessionFactory::getInstance()->add($event->getPlayer());
+		$this->plugin->getSessionFactory()->add($event->getPlayer());
 	}
 
 	/**
 	 * @priority MONITOR
 	 **/
 	public function handleQuit(PlayerQuitEvent $event): void{
-		SessionFactory::getInstance()->remove($event->getPlayer());
+		$this->plugin->getSessionFactory()->remove($event->getPlayer());
 	}
 
 	/**
 	 * @priority MONITOR
 	 */
 	public function handleVote(PlayerVoteEvent $event): void{
-		VoteParty::getInstance()->addVote();
-		if(Loader::getInstance()->getConfig()->get('broadcast-on-claim')){
-			Server::getInstance()->broadcastMessage(Translator::getInstance()->translate('prefix') . Translator::getInstance()->translate('claim-broadcast', ['username' => $event->getPlayer()->getName(), 'link' => Loader::getInstance()->getConfig()->get('link')]));
+		if($this->plugin->getVoteParty()->isEnabled()){
+			$this->plugin->getVoteParty()->addVote();
+		}
+
+		if(UltimateVote::getInstance()->getConfig()->get('broadcast-on-claim')){
+			Server::getInstance()->broadcastMessage($this->plugin->getTranslator()->translate('prefix') . $this->plugin->getTranslator()->translate('claim-broadcast', ['username' => $event->getPlayer()->getName(), 'link' => UltimateVote::getInstance()->getConfig()->get('link')]));
 		}
 	}
 }

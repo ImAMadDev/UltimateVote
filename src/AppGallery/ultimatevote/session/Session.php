@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace AppGallery\ultimatevote\session;
 
 use AppGallery\ultimatevote\event\PlayerVoteEvent;
-use AppGallery\ultimatevote\Loader;
-use AppGallery\ultimatevote\message\Translator;
+use AppGallery\ultimatevote\UltimateVote;
 use AppGallery\ultimatevote\task\async\ProcessVote;
 use AppGallery\ultimatevote\utils\Utils;
-use AppGallery\ultimatevote\utils\VoteRewards;
 use pocketmine\player\Player;
 use pocketmine\Server;
 
@@ -18,13 +16,13 @@ final class Session{
 	private bool $processing = false;
 
 	public function __construct(private readonly Player $player){
-		$this->process(Loader::getInstance()->getConfig()->get('claim-on-join'));
+		$this->process(UltimateVote::getInstance()->getConfig()->get('claim-on-join'));
 	}
 
 	public function process(bool $claim = true): void{
 		$this->processing = true;
 		Server::getInstance()->getAsyncPool()->submitTask(new ProcessVote(Utils::FETCH_URL, $this->getPlayer()->getName(), $claim));
-		$this->player->sendMessage(Translator::getInstance()->translate('prefix') . Translator::getInstance()->translate('checking'));
+		$this->player->sendMessage(UltimateVote::getInstance()->getTranslator()->translate('prefix') . UltimateVote::getInstance()->getTranslator()->translate('checking'));
 	}
 
 	public function getPlayer(): Player{
@@ -41,6 +39,6 @@ final class Session{
 
 	public function claim(): void{
 		(new PlayerVoteEvent($this->getPlayer()))->call();
-		VoteRewards::getInstance()->apply($this->getPlayer());
+		UltimateVote::getInstance()->getVoteRewards()->apply($this->getPlayer());
 	}
 }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace AppGallery\ultimatevote\task\async;
 
-use AppGallery\ultimatevote\Loader;
-use AppGallery\ultimatevote\message\Translator;
+use AppGallery\ultimatevote\UltimateVote;
 use AppGallery\ultimatevote\session\Session;
-use AppGallery\ultimatevote\session\SessionFactory;
 use AppGallery\ultimatevote\utils\Utils;
 use AppGallery\ultimatevote\utils\VoteCache;
+use CurlHandle;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
+use RuntimeException;
 
 abstract class VoteTask extends AsyncTask{
 
@@ -20,12 +20,9 @@ abstract class VoteTask extends AsyncTask{
 
 	private static string $voteKey = "";
 
-	public function __construct(
-		string $username,
-		string $url
-	){
+	public function __construct(string $username, string $url){
 		if(self::$voteKey === ""){
-			throw new \RuntimeException("Vote key not set");
+			throw new RuntimeException("Vote key not set");
 		}
 
 		$this->username = $username;
@@ -33,42 +30,58 @@ abstract class VoteTask extends AsyncTask{
 		$this->url = str_replace(['{username}', '{key}'], [$username, self::$voteKey], $url);
 	}
 
-	public function getUsername() : string{
+	public function getUsername(): string{
 		return $this->username;
 	}
 
-	public function getUrl() : string{
-		return $this->url;
-	}
-	public function onRun() : void{
-		$result = $this->execute();
-		if($this instanceof ProcessVote){
-			if($this->shouldClaim() && $result === Utils::STATUS_NOT_CLAIMED){
-				$result = (new UpdateVote(Utils::POST_URL, $this->getUsername()))->execute();
-				if($result !== false){
-					$this->setResult(Utils::STATUS_JUST_CLAIMED);
-				}
-			} else{
-				$this->setResult($result);
-			}
-		} else{
+	public function onRun(): void{
+		try{
+			$request = Utils::buildCurl($this->url);
+		} catch(RuntimeException $exception){
+			$this->setResult($exception->getMessage());
+			return;
+		}
+
+		$result = $this->execute($request);
+
+		curl_close($request);
+		if(!$this instanceof ProcessVote){
 			$this->setResult($result);
 		}
+
+		if(!$this->shouldClaim() || $result !== Utils::STATUS_NOT_CLAIMED){
+			$this->setResult($result);
+			return;
+		}
+
+		try{
+			$result = (new UpdateVote(Utils::POST_URL, $this->getUsername()))->execute(Utils::buildCurl($this->url));
+		} catch(RuntimeException $exception){
+			$this->setResult($exception->getMessage());
+			return;
+		}
+
+		if($result === false) {
+			return;
+		}
+
+		$this->setResult(Utils::STATUS_JUST_CLAIMED);
 	}
 
-	public abstract function execute() : bool|string;
+	public abstract function execute(CurlHandle $request): bool|string;
 
-	public static function setVoteKey(string $voteKey) : void{
+	public static function setVoteKey(string $voteKey): void{
 		self::$voteKey = $voteKey;
 	}
 
-	public function onCompletion() : void{
+	public function onCompletion(): void{
 		if($this->username === ''){
 			$result = $this->getResult();
-			if(str_contains($result, 'voters')){
-				VoteCache::setTopCache(json_decode($result, true)['voters']);
+			if(!str_contains($result, 'voters')){
+				return;
 			}
-			return;
+
+			VoteCache::setTopCache(json_decode($result, true)['voters']);
 		}
 
 		$player = Server::getInstance()->getPlayerExact($this->getUsername());
@@ -76,30 +89,41 @@ abstract class VoteTask extends AsyncTask{
 			return;
 		}
 
-		$session = SessionFactory::getInstance()->get($player);
+		$session = UltimateVote::getInstance()->getSessionFactory()->get($player);
 		if($session == null){
-			SessionFactory::getInstance()->add($player);
+			UltimateVote::getInstance()->getSessionFactory()->add($player);
 		}
 
 		$session->setProcessing(false);
-		$this->sendPlayerMessage($session, $this->getResult());
+
+		$this->parseResult($session, $this->getResult());
 	}
 
-	private function sendPlayerMessage(Session $session, string $result): void{
-		$translator = Translator::getInstance();
+	private function parseResult(Session $session, string $result): void{
+		$translator = UltimateVote::getInstance()->getTranslator();
 		$player = $session->getPlayer();
 		$prefix = $translator->translate('prefix');
 
 		if($result === Utils::STATUS_NOT_FOUND){
-			$player->sendMessage($prefix . $translator->translate('not-found', ['link' => Loader::getInstance()->getConfig()->get('link')]));
-		} elseif($result === Utils::STATUS_JUST_CLAIMED){
-			$session->claim();
-		} elseif($result === Utils::STATUS_ALREADY_CLAIMED){
-			$player->sendMessage($prefix . $translator->translate('already-claimed'));
-		} elseif($result === Utils::STATUS_NOT_CLAIMED){
-			$player->sendMessage($prefix . $translator->translate('available-rewards', ['command' => Loader::getInstance()->getConfig()->get(Loader::CONFIG_CMD_VOTE)['name'] ?? 'vote']));
-		} else{
-			$player->sendMessage($prefix . $translator->translate('error'));
+			$player->sendMessage($prefix . $translator->translate('not-found', ['link' => UltimateVote::getInstance()->getConfig()->get('link')]));
+			return;
 		}
+
+		if($result === Utils::STATUS_JUST_CLAIMED){
+			$session->claim();
+			return;
+		}
+
+		if($result === Utils::STATUS_ALREADY_CLAIMED){
+			$player->sendMessage($prefix . $translator->translate('already-claimed'));
+			return;
+		}
+
+		if($result === Utils::STATUS_NOT_CLAIMED){
+			$player->sendMessage($prefix . $translator->translate('available-rewards', ['command' => UltimateVote::getInstance()->getConfig()->get(UltimateVote::CONFIG_CMD_VOTE)['name'] ?? 'vote']));
+			return;
+		}
+
+		$player->sendMessage($prefix . $translator->translate('error'));
 	}
 }

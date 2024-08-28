@@ -11,7 +11,7 @@ declare(strict_types=1);
  *       | |
  *       |_|
  *
- * UpdateNotifier, a updater virion for PocketMine-MP
+ * UpdateNotifier, an updater virion for PocketMine-MP
  * Copyright (c) 2018 JackMD  < https://github.com/JackMD >
  *
  * Discord: JackMD#3717

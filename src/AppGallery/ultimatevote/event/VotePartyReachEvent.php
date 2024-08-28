@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AppGallery\ultimatevote\event;
 
+use AppGallery\ultimatevote\utils\Rewards;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
@@ -11,7 +12,7 @@ use pocketmine\event\Event;
 class VotePartyReachEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
-	public function __construct(private int $votes, private array $commands, private array $items){}
+	public function __construct(private int $votes, private Rewards $rewards){}
 
 	public function getVotes(): int{
 		return $this->votes;
@@ -21,19 +22,11 @@ class VotePartyReachEvent extends Event implements Cancellable{
 		$this->votes = $votes;
 	}
 
-	public function getCommands(): array{
-		return $this->commands;
+	public function getRewards(): Rewards{
+		return $this->rewards;
 	}
 
-	public function setCommands(array $commands): void{
-		$this->commands = $commands;
-	}
-
-	public function getItems(): array{
-		return $this->items;
-	}
-
-	public function setItems(array $items): void{
-		$this->items = $items;
+	public function setRewards(Rewards $rewards): void{
+		$this->rewards = $rewards;
 	}
 }

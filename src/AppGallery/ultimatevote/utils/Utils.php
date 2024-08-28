@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace AppGallery\ultimatevote\utils;
 
+use CurlHandle;
 use InvalidArgumentException;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
-use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionManager;
-use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 
 final class Utils{
@@ -81,17 +80,18 @@ final class Utils{
         return $parsedItem;
 	}
 
-	public static function playSound(Player $player, string $sound, float $pitch = 1.0, float $volume = 1.0): void{
-		$packet = new PlaySoundPacket();
-        $position = $player->getPosition();
-        $packet->x = $position->getFloorX();
-        $packet->y = $position->getFloorY();
-        $packet->z = $position->getFloorZ();
-		$packet->soundName = $sound;
-		$packet->pitch = $pitch;
-		$packet->volume = $volume;
-		$player->getNetworkSession()->sendDataPacket($packet);
+	public static function buildCurl(string $url): CurlHandle{
+		$request = curl_init($url);
+		if($request === false){
+			throw new InvalidArgumentException('Curl request failed');
+		}
 
+		curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($request, CURLOPT_FORBID_REUSE, true);
+		curl_setopt($request, CURLOPT_FRESH_CONNECT, true);
+		curl_setopt($request, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
+		return $request;
 	}
 
 }

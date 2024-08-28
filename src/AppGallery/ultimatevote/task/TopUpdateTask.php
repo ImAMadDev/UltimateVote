@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AppGallery\ultimatevote\task;
 
 use AppGallery\ultimatevote\task\async\ProcessVote;
