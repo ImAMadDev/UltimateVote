@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace AppGallery\ultimatevote\command;
 
 use AppGallery\ultimatevote\UltimateVote;
-use AppGallery\ultimatevote\utils\Utils;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\plugin\PluginOwnedTrait;
@@ -25,12 +23,7 @@ final class VoteCommand extends Command implements PluginOwned{
 			$cmdConfig['usage'],
 			$cmdConfig['aliases']
 		);
-		if (is_string($cmdConfig['permission'])){
-			Utils::registerPermission($cmdConfig['permission']);
-			$this->setPermission($cmdConfig['permission']);
-		} else {
-			$this->setPermission(DefaultPermissionNames::GROUP_USER);
-		}
+		$this->setPermission('ultimateVote.command.vote');
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args): void{

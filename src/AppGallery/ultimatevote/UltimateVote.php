@@ -6,13 +6,13 @@ namespace AppGallery\ultimatevote;
 
 use AppGallery\ultimatevote\command\VoteCommand;
 use AppGallery\ultimatevote\hologram\Hologram;
+use AppGallery\ultimatevote\libs\JackMD\UpdateNotifier\UpdateNotifier;
 use AppGallery\ultimatevote\message\Translator;
 use AppGallery\ultimatevote\session\SessionFactory;
 use AppGallery\ultimatevote\task\async\VoteTask;
 use AppGallery\ultimatevote\task\TopUpdateTask;
 use AppGallery\ultimatevote\utils\Rewards;
 use AppGallery\ultimatevote\voteparty\VoteParty;
-use JackMD\UpdateNotifier\UpdateNotifier;
 use JsonException;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\EntityFactory;

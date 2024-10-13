@@ -11,9 +11,6 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
-use pocketmine\permission\DefaultPermissions;
-use pocketmine\permission\Permission;
-use pocketmine\permission\PermissionManager;
 use pocketmine\utils\TextFormat;
 
 final class Utils{
@@ -29,22 +26,6 @@ final class Utils{
 	const STATUS_JUST_CLAIMED = '3';
 
 	private function __construct(){}
-
-	public static function registerPermission(string $permission, string $description = '', bool $default = false): Permission{
-		$permManager = PermissionManager::getInstance();
-
-		$opRoot = $permManager->getPermission(DefaultPermissions::ROOT_OPERATOR);
-		$everyoneRoot = $permManager->getPermission(DefaultPermissions::ROOT_USER);
-
-		$perm = new Permission($permission, $description);
-
-		$opRoot->addChild($perm->getName(), true);
-		$everyoneRoot->addChild($perm->getName(), $default);
-
-		$permManager->addPermission($perm);
-
-		return $permManager->getPermission($permission);
-	}
 
 	public static function parseRewards(array $items): array{
 		$rewards = [];

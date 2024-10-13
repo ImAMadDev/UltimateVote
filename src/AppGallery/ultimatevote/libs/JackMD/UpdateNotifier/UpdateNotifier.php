@@ -30,9 +30,9 @@ declare(strict_types=1);
  * ------------------------------------------------------------------------
  */
 
-namespace JackMD\UpdateNotifier;
+namespace AppGallery\ultimatevote\libs\JackMD\UpdateNotifier;
 
-use JackMD\UpdateNotifier\task\UpdateNotifyTask;
+use AppGallery\ultimatevote\libs\JackMD\UpdateNotifier\task\UpdateNotifyTask;
 use pocketmine\plugin\Plugin;
 
 class UpdateNotifier{

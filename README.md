@@ -21,7 +21,7 @@ UltimateVote is a PocketMine-MP plugin for letting players claim their rewards f
 
 ## Last Update
 - Most code clean-up
-- When a command is to be executed by the console it must have the prefix `{console}`
+- Set `/vote` command default permission
 
 ## Upcoming functions to be implemented
 - Save votes

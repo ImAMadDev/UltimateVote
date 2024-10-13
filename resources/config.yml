@@ -36,7 +36,6 @@ vote-party:
 command-vote:
   name: vote
   description: "Vote for us"
-  permission: null
   usage: /vote
   aliases:
     - ultimatevote

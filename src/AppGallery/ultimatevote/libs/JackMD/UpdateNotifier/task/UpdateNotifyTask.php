@@ -30,7 +30,7 @@ declare(strict_types=1);
  * ------------------------------------------------------------------------
  */
 
-namespace JackMD\UpdateNotifier\task;
+namespace AppGallery\ultimatevote\libs\JackMD\UpdateNotifier\task;
 
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
