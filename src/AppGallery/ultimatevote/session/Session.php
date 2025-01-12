@@ -21,7 +21,7 @@ final class Session{
 
 	public function process(bool $claim = true): void{
 		$this->processing = true;
-		Server::getInstance()->getAsyncPool()->submitTask(new ProcessVote(Utils::FETCH_URL, $this->getPlayer()->getName(), $claim));
+		Server::getInstance()->getAsyncPool()->submitTask(new ProcessVote(Utils::FETCH_URL, UltimateVote::getInstance()->getConfig()->get('api-key'), $this->getPlayer()->getName(), $claim));
 		$this->player->sendMessage(UltimateVote::getInstance()->getTranslator()->translate('prefix') . UltimateVote::getInstance()->getTranslator()->translate('checking'));
 	}
 

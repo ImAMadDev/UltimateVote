@@ -43,7 +43,6 @@ final class UltimateVote extends PluginBase{
 	protected function onLoad(): void{
 		self::$instance = $this;
 		$this->saveDefaultConfigs();
-		VoteTask::setVoteKey($this->getConfig()->get(self::CONFIG_KEY));
 		UpdateNotifier::checkUpdate($this, $this->getName(), $this->getDescription()->getVersion());
 	}
 
@@ -67,7 +66,7 @@ final class UltimateVote extends PluginBase{
 		$this->sessionFactory = new SessionFactory();
 		$this->translator = new Translator($this);
 		$this->voteRewards = new Rewards($this->getConfig()->get('rewards'));
-		$this->getScheduler()->scheduleRepeatingTask(new TopUpdateTask(), (int) $this->getConfig()->get(self::CONFIG_TOP_UPDATE, 300) * 20);
+		$this->getScheduler()->scheduleRepeatingTask(new TopUpdateTask($this->getConfig()->get(self::CONFIG_KEY)), (int) $this->getConfig()->get(self::CONFIG_TOP_UPDATE, 300) * 20);
 	}
 
 	private function registerListeners(): void{

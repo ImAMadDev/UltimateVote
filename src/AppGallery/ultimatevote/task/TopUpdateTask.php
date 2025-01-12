@@ -11,7 +11,11 @@ use pocketmine\Server;
 
 class TopUpdateTask extends Task{
 
-	public function onRun(): void{
-		Server::getInstance()->getAsyncPool()->submitTask(new ProcessVote(Utils::TOP_URL));
+    public function __construct(
+        private readonly string $apiKey
+    ){}
+
+    public function onRun(): void{
+		Server::getInstance()->getAsyncPool()->submitTask(new ProcessVote(Utils::TOP_URL, $this->apiKey));
 	}
 }

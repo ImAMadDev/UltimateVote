@@ -8,8 +8,8 @@ use CurlHandle;
 
 final class ProcessVote extends VoteTask{
 
-	public function __construct(string $url, string $username = '', private readonly bool $claim = false){
-		parent::__construct($username, $url);
+	public function __construct(string $url, string $apiKey, string $username = '', private readonly bool $claim = false){
+		parent::__construct($username, $url, $apiKey);
 	}
 
 	public function shouldClaim(): bool{

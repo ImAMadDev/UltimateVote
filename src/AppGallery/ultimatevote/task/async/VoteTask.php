@@ -17,18 +17,14 @@ abstract class VoteTask extends AsyncTask{
 
 	protected string $username;
 	protected string $url;
+    private string $apiKey;
 
-	private static string $voteKey = "";
-
-	public function __construct(string $username, string $url){
-		if(self::$voteKey === ""){
-			throw new RuntimeException("Vote key not set");
-		}
-
+    public function __construct(string $username, string $url, string $apiKey){
 		$this->username = $username;
-		$username = str_replace(' ', '%20', $username);
-		$this->url = str_replace(['{username}', '{key}'], [$username, self::$voteKey], $url);
-	}
+        $this->apiKey = $apiKey;
+        $username = str_replace(' ', '%20', $username);
+        $this->url = str_replace(['{username}', '{key}'], [$username, $this->apiKey], $url);
+    }
 
 	public function getUsername(): string{
 		return $this->username;
@@ -55,8 +51,9 @@ abstract class VoteTask extends AsyncTask{
 		}
 
 		try{
-			$result = (new UpdateVote(Utils::POST_URL, $this->getUsername()))->execute(Utils::buildCurl($this->url));
+			$result = (new UpdateVote(Utils::POST_URL, $this->getUsername(), $this->apiKey))->execute(Utils::buildCurl($this->url));
 		} catch(RuntimeException $exception){
+            error_log($exception->getMessage());
 			$this->setResult($exception->getMessage());
 			return;
 		}
@@ -69,10 +66,6 @@ abstract class VoteTask extends AsyncTask{
 	}
 
 	public abstract function execute(CurlHandle $request): bool|string;
-
-	public static function setVoteKey(string $voteKey): void{
-		self::$voteKey = $voteKey;
-	}
 
 	public function onCompletion(): void{
 		if($this->username === ''){

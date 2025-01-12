@@ -91,6 +91,7 @@ class UpdateNotifyTask extends AsyncTask{
 			$plugin->getLogger()->info("No new updates were found. You are using the latest version.");
 			return;
 		}
+
 		$artifactUrl = $artifactUrl . "/" . $pluginName . "_" . $highestVersion . ".phar";
 		$plugin->getLogger()->notice(vsprintf("Version %s has been released for API %s. Download the new release at %s", [$highestVersion, $api, $artifactUrl]));
 	}
