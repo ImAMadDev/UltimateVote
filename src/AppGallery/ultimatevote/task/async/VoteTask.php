@@ -45,8 +45,13 @@ abstract class VoteTask extends AsyncTask{
 			$this->setResult($result);
 		}
 
+		$this->setResult($result);
+
+		if($result === Utils::STATUS_ALREADY_CLAIMED){
+			return;
+		}
+
 		if(!$this->shouldClaim() || $result !== Utils::STATUS_NOT_CLAIMED){
-			$this->setResult($result);
 			return;
 		}
 
