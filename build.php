@@ -1,7 +1,7 @@
 <?php
 $dir = explode('/', __DIR__);
 $plugin_name = end($dir);
-$file_phar = '/home/appgallery/.pocketide/versions/5.33.2/plugins/' . $plugin_name . '.phar';
+$file_phar = __DIR__ . '/' . $plugin_name . '.phar';
 
 if (file_exists($file_phar)) {
     echo "Phar file already exists!";
