@@ -1,0 +1,37 @@
+name: Build PocketMine Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer, phpunit
+          coverage: none
+
+      - name: Build Plugin (.phar)
+        run: php -d phar.readonly=0 build.php
+
+      - name: Upload .phar as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-phar
+          path: ./*.phar
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./*.phar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

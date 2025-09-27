@@ -20,8 +20,12 @@ UltimateVote is a PocketMine-MP plugin for letting players claim their rewards f
 
 
 ## Last Update
-- Most code clean-up
-- Set `/vote` command default permission
+### Version 1.8.0-beta
+- **Fixed duplicate vote rewards issue** - Added 5-second command cooldown
+- **Fixed infinite processing state** - Auto-clear after 30 seconds
+- **Enhanced error handling** - Proper API error detection and user-friendly messages
+- **Comprehensive logging** - Detailed AsyncTask logging for debugging
+- **Improved stability** - Robust timeout protection and state management
 
 ## Upcoming functions to be implemented
 - Save votes
@@ -29,4 +33,4 @@ UltimateVote is a PocketMine-MP plugin for letting players claim their rewards f
 
 <span style="color:yellow">The plugin is still under development</span>
 
-Thanks for your suggestions <a href="https://github.com/cendaaal">cendaaal</a>  
+Thanks for your suggestions <a href="https://github.com/cendaaal">cendaaal</a>

@@ -36,13 +36,16 @@ final class VoteCommand extends Command implements PluginOwned{
 		$session = UltimateVote::getInstance()->getSessionFactory()->get($sender);
 		if($session === null){
 			UltimateVote::getInstance()->getSessionFactory()->add($sender);
+			$session = UltimateVote::getInstance()->getSessionFactory()->get($sender);
 		}
 
+		// Prevent processing if already checking
 		if($session->isProcessing()){
-			$sender->sendMessage($translator->translate('prefix') . $translator->translate('already-checking'));
+			$sender->sendMessage($translator->translate('prefix') . $translator->translate('already-checking') . " §7(Usa /vote reset para reiniciar)");
 			return;
 		}
 
+		// The 5-second cooldown is now handled inside the session process() method
 		$session->process();
 	}
 }

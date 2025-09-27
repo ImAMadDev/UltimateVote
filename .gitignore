@@ -3,3 +3,4 @@ vendor
 .idea
 updateAndStart.sh
 build.php
+.zed
