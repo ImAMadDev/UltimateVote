@@ -6,25 +6,23 @@ namespace AppGallery\ultimatevote\task\async;
 
 use CurlHandle;
 
-final class ProcessVote extends VoteTask
-{
+final class ProcessVote extends VoteTask{
     public function __construct(
-        string $url,
-        string $apiKey,
-        string $username = "",
+        string                $url,
+        string                $apiKey,
+        string                $username = "",
         private readonly bool $claim = false,
-    ) {
+    ){
         parent::__construct($username, $url, $apiKey);
     }
 
-    public function shouldClaim(): bool
-    {
+    public function shouldClaim(): bool{
         return $this->claim;
     }
 
     public function execute(CurlHandle $request): bool|string{
         $result = curl_exec($request);
-        if ($result === false) {
+        if($result === false){
             \GlobalLogger::get()->error("[ProcessVote] cURL execution failed for user: " . $this->getUsername());
         }
         return $result;

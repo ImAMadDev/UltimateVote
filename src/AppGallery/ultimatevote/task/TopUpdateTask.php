@@ -10,12 +10,11 @@ use AppGallery\ultimatevote\UltimateVote;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 
-class TopUpdateTask extends Task
-{
-    public function __construct(private readonly string $apiKey) {}
+class TopUpdateTask extends Task{
+    public function __construct(private readonly string $apiKey){
+    }
 
-    public function onRun(): void
-    {
+    public function onRun(): void{
         Server::getInstance()
             ->getAsyncPool()
             ->submitTask(new ProcessVote(Utils::TOP_URL, $this->apiKey));

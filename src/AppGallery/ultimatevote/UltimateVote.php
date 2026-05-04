@@ -9,7 +9,6 @@ use AppGallery\ultimatevote\hologram\Hologram;
 use AppGallery\ultimatevote\libs\JackMD\UpdateNotifier\UpdateNotifier;
 use AppGallery\ultimatevote\message\Translator;
 use AppGallery\ultimatevote\session\SessionFactory;
-use AppGallery\ultimatevote\task\async\VoteTask;
 use AppGallery\ultimatevote\task\TopUpdateTask;
 
 use AppGallery\ultimatevote\utils\Rewards;
@@ -25,8 +24,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
 
-final class UltimateVote extends PluginBase
-{
+final class UltimateVote extends PluginBase{
     use SingletonTrait;
 
     private const CONFIG_HOLOGRAM = "hologram.yml";
@@ -42,8 +40,7 @@ final class UltimateVote extends PluginBase
     private Translator $translator;
     private Rewards $voteRewards;
 
-    protected function onLoad(): void
-    {
+    protected function onLoad(): void{
         self::$instance = $this;
         $this->saveDefaultConfigs();
         UpdateNotifier::checkUpdate(
@@ -53,21 +50,19 @@ final class UltimateVote extends PluginBase
         );
     }
 
-    private function saveDefaultConfigs(): void
-    {
+    private function saveDefaultConfigs(): void{
         $this->saveResource(self::CONFIG_MAIN);
         $this->saveResource(self::CONFIG_HOLOGRAM);
         $this->saveResource(self::CONFIG_MESSAGES);
     }
 
-    protected function onEnable(): void
-    {
+    protected function onEnable(): void{
         $this->registerListeners();
         $this->registerCommands();
         $this->registerEntity();
-        try {
+        try{
             $this->loadHologram();
-        } catch (JsonException $exception) {
+        } catch(JsonException $exception){
             $this->getLogger()->error($exception->getMessage());
         }
 
@@ -78,29 +73,26 @@ final class UltimateVote extends PluginBase
 
         $this->getScheduler()->scheduleRepeatingTask(
             new TopUpdateTask($this->getConfig()->get(self::CONFIG_KEY)),
-            (int) $this->getConfig()->get(self::CONFIG_TOP_UPDATE, 300) * 20,
+            (int)$this->getConfig()->get(self::CONFIG_TOP_UPDATE, 300) * 20,
         );
     }
 
-    private function registerListeners(): void
-    {
+    private function registerListeners(): void{
         $this->getServer()
             ->getPluginManager()
             ->registerEvents(new EventListener($this), $this);
     }
 
-    private function registerCommands(): void
-    {
+    private function registerCommands(): void{
         $this->getServer()
             ->getCommandMap()
             ->register($this->getName(), new VoteCommand($this));
     }
 
-    private function registerEntity(): void
-    {
+    private function registerEntity(): void{
         EntityFactory::getInstance()->register(
             Hologram::class,
-            function (World $world, CompoundTag $nbt): Hologram {
+            function(World $world, CompoundTag $nbt): Hologram{
                 return new Hologram(
                     EntityDataHelper::parseLocation($nbt, $world),
                     $nbt,
@@ -113,15 +105,14 @@ final class UltimateVote extends PluginBase
     /**
      * @throws JsonException
      */
-    private function loadHologram(): void
-    {
+    private function loadHologram(): void{
         $config = new Config($this->getDataFolder() . self::CONFIG_HOLOGRAM);
-        if ($config->get("enabled") === true) {
+        if($config->get("enabled") === true){
             $loc = $config->get("location", []);
             $world = Server::getInstance()
                 ->getWorldManager()
                 ->getWorldByName($loc["world"]);
-            if ($world === null) {
+            if($world === null){
                 $this->getLogger()->error(
                     "The hologram cannot be loaded, the world does not exist or is not loaded.",
                 );
@@ -130,9 +121,9 @@ final class UltimateVote extends PluginBase
 
             $this->hologram = new Hologram(
                 new Location(
-                    (float) $loc["x"],
-                    (float) $loc["y"],
-                    (float) $loc["z"],
+                    (float)$loc["x"],
+                    (float)$loc["y"],
+                    (float)$loc["z"],
                     $world,
                     0.0,
                     0.0,
@@ -142,35 +133,27 @@ final class UltimateVote extends PluginBase
         }
     }
 
-    public function getHologram(): ?Hologram
-    {
+    public function getHologram(): ?Hologram{
         return $this->hologram;
     }
 
-    public function getVoteParty(): VoteParty
-    {
+    public function getVoteParty(): VoteParty{
         return $this->voteParty;
     }
 
-    public function getSessionFactory(): SessionFactory
-    {
+    public function getSessionFactory(): SessionFactory{
         return $this->sessionFactory;
     }
 
-    public function getTranslator(): Translator
-    {
+    public function getTranslator(): Translator{
         return $this->translator;
     }
 
-    public function getVoteRewards(): Rewards
-    {
+    public function getVoteRewards(): Rewards{
         return $this->voteRewards;
     }
 
-    protected function onDisable(): void
-    {
+    protected function onDisable(): void{
         $this->voteParty->save();
     }
-
-
 }

@@ -20,13 +20,8 @@ UltimateVote is a PocketMine-MP plugin for letting players claim their rewards f
 
 
 ## Last Update
-### Version 1.8.0-beta
-- **Fixed duplicate vote rewards issue** - Added 5-second command cooldown
-- **Fixed infinite processing state** - Auto-clear after 30 seconds
-- **Enhanced error handling** - Proper API error detection and user-friendly messages
-- **Comprehensive logging** - Detailed AsyncTask logging for debugging
-- **Improved stability** - Robust timeout protection and state management
-
+### Version 1.8.1
+- **Fixed [crash when /vote](https://github.com/ImAMadDev/UltimateVote/issues/3)** - Added Cancellable interface
 ## Upcoming functions to be implemented
 - Save votes
 - Different benefits depending on the player's permissions
