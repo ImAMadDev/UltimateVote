@@ -6,7 +6,6 @@ namespace AppGallery\ultimatevote\task;
 
 use AppGallery\ultimatevote\task\async\ProcessVote;
 use AppGallery\ultimatevote\utils\Utils;
-use AppGallery\ultimatevote\UltimateVote;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 

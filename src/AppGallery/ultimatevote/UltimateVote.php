@@ -41,7 +41,7 @@ final class UltimateVote extends PluginBase{
     private Rewards $voteRewards;
 
     protected function onLoad(): void{
-        self::$instance = $this;
+        self::setInstance($this);
         $this->saveDefaultConfigs();
         UpdateNotifier::checkUpdate(
             $this,
@@ -78,9 +78,7 @@ final class UltimateVote extends PluginBase{
     }
 
     private function registerListeners(): void{
-        $this->getServer()
-            ->getPluginManager()
-            ->registerEvents(new EventListener($this), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new GlobalListener($this), $this);
     }
 
     private function registerCommands(): void{

@@ -10,7 +10,7 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\Server;
 
-final class EventListener implements Listener{
+final class GlobalListener implements Listener{
 
 	public function __construct(
 		private readonly UltimateVote $plugin

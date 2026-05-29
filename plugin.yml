@@ -1,9 +1,9 @@
 name: UltimateVote
 version: 1.8.1
-api: 5.0.0
+api: 5.43.0
 author: AppGallery
 main: AppGallery\ultimatevote\UltimateVote
 permissions:
   ultimateVote.command.vote:
     default: true
-    description: "Default UltimateVote permission"
+    description: Default UltimateVote permission

@@ -4,5 +4,3 @@ vendor
 updateAndStart.sh
 build.php
 .zed
-pocketide_stubs/
-.pocketide/
